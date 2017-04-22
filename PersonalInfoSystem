@@ -1,0 +1,717 @@
+PersonalInfoSystem.java
+
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+
+public class PersonalInfoSystem extends JFrame
+{
+
+    private static Connection connect = null;
+    private Statement statement = null; // java.sql.Statement
+    private PreparedStatement preparedStatement = null;
+    private ResultSet resultSet = null;
+    private JButton btnAuslesen;
+    private static final String dbname = "test";
+    private static final String tbplz = "plz";
+    private static final String id = "Id"; 
+    private static final String nachname = "nachName";
+    private static final String vorname = "vorName";
+    private static final String geschlecht = "Geschlecht";
+    private static final String ausbildung = "Ausbildung";
+    private static final String plz = "PLZ";
+    private static final String stadt = "Stadt";
+    private static final String gehalt = "Gehalt";
+    
+    private static final String CENTER = null;
+    // private static final String id = null;
+    private JButton btnBeenden = new JButton("Beenden");
+    
+    private JButton btnAddieren = new JButton("Addieren");
+    private JButton btnLöschen = new JButton("Löschen");
+  
+    private JButton btnAktualisieren = new JButton("Aktualisieren");
+    private JButton btnOk = new JButton("OK");
+    
+    
+    private JLabel lblSearch = new JLabel("Search by ID");
+    
+    private JLabel lblServer = new JLabel("Server");
+    private JLabel lblClient = new JLabel("Client");
+      
+    private JLabel lblId = new JLabel("Id");
+    private JLabel lblNachname = new JLabel("Nach Name");
+    private JLabel lblVorname = new JLabel("Vor Name");
+    private JLabel lblGeschlecht = new JLabel("Geschlecht");
+    private JLabel lblAusbildung = new JLabel("Ausbildung");
+    private JLabel lblPLZ = new JLabel("PLZ");
+    private JLabel lblStadt = new JLabel("Stadt");
+    private JLabel lblGehalt = new JLabel("Gehalt");
+    
+    private JTextField txtId = new JTextField("");
+    private JTextField txtNachname = new JTextField("");
+    private JTextField txtVorname = new JTextField("");
+    private JTextField txtGeschlecht = new JTextField("");
+    private JTextField txtAusbildung = new JTextField("");
+    private JTextField txtPLZ = new JTextField("");
+    private JTextField txtStadt = new JTextField("");
+    private JTextField txtGehalt = new JTextField("");
+    private JTextField txtSearch = new JTextField("");
+            
+    DefaultTableModel model = null;
+    DefaultTableModel dm;
+    
+    private JButton btnMySqlAddieren = new JButton("MySqlAddieren");
+    private JButton btnMySqlLöschen = new JButton("btnMySqlLöschen");
+    private JButton btnMySqlAktualisieren = new JButton("btnMySqlAktualisieren");
+    
+    public PersonalInfoSystem()
+    {
+        initializeComponents();
+
+    }
+
+    private void initializeComponents()
+    {
+
+        this.setSize(900, 800);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        lblClient.setBounds(700, 480, 40, 100);
+        this.add(lblClient);
+        lblClient.setForeground(Color.BLUE);
+        lblClient.setFont(new Font("TimesRoman", Font.PLAIN, 14));
+        this.lblClient.setVisible(true);
+        
+        btnAuslesen = new JButton("Auslesen");
+        btnAuslesen.addActionListener(new btnAuslesenActionListener());
+        btnAuslesen.setBounds(700, 545, 115, 40);
+        this.add(btnAuslesen);
+        this.setLocationRelativeTo(null);
+
+        JButton btnAddieren = new JButton("Addieren");
+        btnAddieren.setBounds(700, 590, 115, 40);
+        this.btnAddieren.setVisible(true);
+        this.add(btnAddieren);
+        btnAddieren.addActionListener(new btnAddierenActionListener());
+        btnAddieren.addMouseListener(null);
+               
+        JButton btnLöschen = new JButton("Löschen");
+        btnLöschen.setBounds(700, 635, 115, 40);
+        this.btnLöschen.setVisible(true);
+        this.add(btnLöschen);
+        btnLöschen.addActionListener(new btnLöschenActionListener());
+
+
+        JButton btnAktualisieren = new JButton("Aktualisieren");
+        btnAktualisieren.setBounds(700, 680, 115, 40);
+        this.btnAktualisieren.setVisible(true);
+        this.add(btnAktualisieren);
+        btnAktualisieren.addActionListener(new btnAktualisierenActionListener());
+
+        btnBeenden = new JButton("Beenden");
+        btnBeenden.setBounds(150, 680, 115, 40);
+        this.btnBeenden.setVisible(true);
+        this.add(btnBeenden);
+        btnBeenden.addActionListener(new btnBeendenActionListener());
+        
+        
+        btnOk = new JButton("OK");
+        btnOk.setBounds(500, 480, 60, 40);
+        this.btnOk.setVisible(true);
+        this.add(btnOk);
+        
+        //btnOk.addActionListener(new btnOkActionListener());
+        
+        
+        
+        lblServer.setBounds(150, 480, 40, 100);
+        this.add(lblServer);
+        lblServer.setForeground(Color.BLUE);
+        lblServer.setFont(new Font("TimesRoman", Font.PLAIN, 14));
+        this.lblServer.setVisible(true);
+        
+        lblSearch.setBounds(380, 450, 100, 100);
+        this.add(lblSearch);
+        lblSearch.setForeground(Color.BLUE);
+        lblSearch.setFont(new Font("TimesRoman", Font.PLAIN, 14));
+        this.lblSearch.setVisible(true);
+        
+        JButton btnMySqlAddieren = new JButton("Addieren");
+        btnMySqlAddieren.setBounds(150, 545, 115, 40);
+        this.btnMySqlAddieren.setVisible(true);
+        this.add(btnMySqlAddieren);
+        btnMySqlAddieren.addActionListener(new btnMySqlAddierenActionListener());
+
+        JButton btnMySqlLöschen = new JButton("Löschen");
+        btnMySqlLöschen.setBounds(150, 590, 115, 40);
+        this.btnMySqlLöschen.setVisible(true);
+        this.add(btnMySqlLöschen);
+        btnMySqlLöschen.addActionListener(new btnMySqlLöschenActionListener());
+
+        JButton btnMySqlAktualisieren = new JButton("Aktualisieren");
+        btnMySqlAktualisieren.setBounds(150, 635, 115, 40);
+        this.btnMySqlAktualisieren.setVisible(true);
+        this.add(btnMySqlAktualisieren);
+        btnMySqlAktualisieren.addActionListener(new btnMySqlAktualisierenActionListener());
+
+        
+        JLabel lblId = new JLabel("Id");
+        lblId.setBounds(350, 500, 40, 100);
+        this.add(lblId);
+        this.lblId.setVisible(true);
+       
+
+        JLabel lblNachname = new JLabel("Nach Name");
+        lblNachname.setBounds(350, 520, 100, 100);
+        this.add(lblNachname);
+        this.lblNachname.setVisible(true);
+        this.add(lblNachname);
+
+        JLabel lblVorname = new JLabel("Vor Name");
+        lblVorname.setBounds(350, 540, 100, 100);
+        this.add(lblVorname);
+        this.lblVorname.setVisible(true);
+        this.add(lblVorname);
+
+        lblGeschlecht = new JLabel("Geschlecht");
+        lblGeschlecht.setBounds(350, 560, 100, 100);
+        this.add(lblGeschlecht);
+        this.add(lblGeschlecht);
+        this.lblGeschlecht.setVisible(true);
+        this.add(lblGeschlecht);
+
+        lblAusbildung = new JLabel("Ausbildung");
+        lblAusbildung.setBounds(350, 580, 100, 100);
+        this.add(lblAusbildung);
+        this.lblAusbildung.setVisible(true);
+        this.add(lblAusbildung);
+
+        lblPLZ = new JLabel("PLZ");
+        lblPLZ.setBounds(350, 600, 100, 100);
+        this.add(lblPLZ);
+        this.lblPLZ.setVisible(true);
+        this.add(lblPLZ);
+
+        lblStadt = new JLabel("Stadt");
+        lblStadt.setBounds(350, 620, 100, 100);
+        this.add(lblStadt);
+        this.lblStadt.setVisible(true);
+        this.add(lblStadt);
+        
+        lblGehalt = new JLabel("Gehalt");
+        lblGehalt.setBounds(350, 640, 100, 100);
+        this.add(lblGehalt);
+        this.lblGehalt.setVisible(true);
+        this.add(lblGehalt);
+        
+        // JTextField txtID = new JTextField("");
+        txtId.setBounds(420, 535, 134, 20);
+        this.add(txtId);
+
+        // JTextField txtNachname = new JTextField("");
+        txtNachname.setBounds(420, 555, 134, 20);
+        this.add(txtNachname);
+
+        // JTextField txtVorname = new JTextField("");
+        txtVorname.setBounds(420, 575, 134, 20);
+        this.add(txtVorname);
+
+        // JTextField txtGeschlecht = new JTextField("");
+        txtGeschlecht.setBounds(420, 595, 134, 20);
+        this.add(txtGeschlecht);
+
+        // JTextField txtAusbildung = new JTextField("");
+        txtAusbildung.setBounds(420, 615, 134, 20);
+        this.add(txtAusbildung);
+
+        // JTextField txtPLZ = new JTextField("");
+        txtPLZ.setBounds(420, 635, 134, 20);
+        this.add(txtPLZ);
+
+        // JTextField txtStadt = new JTextField("");
+        txtStadt.setBounds(420, 655, 134, 20);
+        this.add(txtStadt);
+
+        txtGehalt.setBounds(420, 675, 134, 20);
+        this.add(txtGehalt);
+        
+        
+        txtSearch.setBounds(460, 480, 40, 40);
+        this.add(txtSearch);
+        
+        
+        JLabel lblHeading = new JLabel("Personal Information System");
+        this.add(lblHeading);
+        lblHeading.setForeground(Color.BLUE);
+        lblHeading.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        this.setVisible(true);
+        this.getContentPane().add(lblHeading, BorderLayout.NORTH);
+        lblHeading.setHorizontalAlignment(SwingConstants.CENTER);
+     
+    }
+
+    // Methode die die Verbindung herstellt
+    private static void doConnect() throws SQLException, ClassNotFoundException
+    {
+        if (connect == null)
+        {
+            // 1. mysql-treiber laden (jedes dbms hat eigene treiber)
+            Class.forName("com.mysql.jdbc.Driver");
+            // verbindung zu der DB aufbauen
+            // Database Name testDB
+            // Password mypasswd
+            // Table name plz
+            connect = DriverManager.getConnection("jdbc:mysql://localhost/" + dbname + "?" + "user=testDB&password=");
+        }
+    }
+
+    public static long updateInDB(PISData pisData)
+    {
+
+        long lRes = -1;
+        // Statement statement = connect.createStatement()
+
+        try
+        {
+            doConnect();
+        }
+        catch (Exception e)
+        {
+
+        }
+
+        return lRes;
+    }
+
+    public static long writeToDB1(PISData pisData)
+    {
+        // legt einen neuen datensatz für cDataComment an
+        long lRes = -1;
+        try
+        {
+            doConnect();
+            PreparedStatement lpreparedStatement;
+            // String plz;
+            String testDB = null;
+            lpreparedStatement = connect.prepareStatement("insert into " + dbname + "." + testDB + " "
+                    + " (`Id`,`nachName`, `vorName`,`Geschlecht`,`Ausbildung`,`PLZ`,`Stadt`,`Gehalt`) " + " values (?,?,?,?,?,?,?,?)");
+            // `Id`,`nachName`, `vorName`,`Geschlecht`,`Ausbildung`,`PLZ`,`Stadt`, Gehalt
+            // werte einfügen (erster paramerter gibt an, welches ?
+            lpreparedStatement.setLong(1, pisData.getId());
+            lpreparedStatement.setString(2, pisData.getnachName());
+            lpreparedStatement.setString(3, pisData.getvorName());
+            lpreparedStatement.setString(4, pisData.getGeschlecht());
+            lpreparedStatement.setString(5, pisData.getAusbildung());
+            lpreparedStatement.setString(6, pisData.getPLZ());
+            lpreparedStatement.setString(7, pisData.getStadt());
+            lpreparedStatement.setLong(8, pisData.getGehalt());
+            lpreparedStatement.execute(); // führt das prepared statement aus
+
+            // die ID des neuen Eintrages ermitteln
+            ResultSet gkeys = lpreparedStatement.getGeneratedKeys();
+            if (gkeys.next())
+            {
+                lRes = gkeys.getLong(1);
+            }
+
+        }
+        catch (SQLException se)
+        {
+
+        }
+        catch (ClassNotFoundException cnfe)
+        {
+
+        }
+        return lRes;
+    }
+
+    private void readDataBase()
+    {
+        try
+        {
+            doConnect();
+
+            // in sql wird mittels "statements" agiert
+            statement = connect.createStatement();
+
+            String testDB = "plz";
+            // Here is the sql command to get data from the mysql database
+            resultSet = statement.executeQuery("SELECT * FROM " + dbname + "." + testDB);
+
+            // writeResultSet(resultSet);
+            // komfortabler geht es mit preparedStatements
+            preparedStatement = connect.prepareStatement("insert into " + dbname + "." + testDB + " "
+                    + " (`Id`, `nachName`, `vorName`, `Geschlecht`, `Ausbildung`, `PLZ`, `Stadt`,`Gehalt`) " + " values (?,?,?,?,?,?,?,?)");
+
+            preparedStatement.setString(1, "Id");
+            preparedStatement.setString(2, "nachName");
+            preparedStatement.setString(3, "vorName");
+            preparedStatement.setString(4, "Geschlecht");
+            preparedStatement.setString(5, "Ausbildung");
+            preparedStatement.setString(6, "PLZ");
+            preparedStatement.setString(7, "Stadt");
+            preparedStatement.setString(8, "Gehalt");
+
+            preparedStatement.execute(); // führt das prepared statement aus
+
+            preparedStatement = connect
+                    .prepareStatement("SELECT `Id`, `nachName`, `vorName`, `Geschlecht`, `Ausbildung`, `PLZ`, `Stadt`, `Gehalt`  from " + dbname + "." + testDB);
+
+            
+        }
+        catch (Exception e)
+        {
+            System.out.println("Fehler in readDB : " + e.toString());
+        }
+
+    }
+
+   // Hier sind die daten ausgechreiben in Jtable
+
+    private void writeResultSetJtable(ResultSet resultSet) throws SQLException
+    {
+        Vector<String> zeilenVektor = new Vector<String>();
+        model = new DefaultTableModel();
+
+        model.addColumn("Id");
+        model.addColumn("nachName");
+        model.addColumn("vorName");
+        model.addColumn("Geschlecht");
+        model.addColumn("Ausbildung");
+        model.addColumn("PLZ");
+        model.addColumn("Stadt");
+        model.addColumn("Gehalt");
+        
+
+        statement = connect.createStatement();
+        
+        String testDB ="plz";
+        
+        // here is the sql statements which is equivalent to the example
+         resultSet = statement.executeQuery("SELECT * FROM " + dbname + "." + testDB);
+
+        while (resultSet.next())
+        {
+            zeilenVektor.add(resultSet.getString("Id"));
+            zeilenVektor.add(resultSet.getString("nachName"));
+            zeilenVektor.add(resultSet.getString("vorName"));
+            zeilenVektor.add(resultSet.getString("Geschlecht"));
+            zeilenVektor.add(resultSet.getString("Ausbildung"));
+            zeilenVektor.add(resultSet.getString("PLZ"));
+            zeilenVektor.add(resultSet.getString("Stadt"));
+            zeilenVektor.add(resultSet.getString("Gehalt"));
+            
+            model.addRow(zeilenVektor);
+            zeilenVektor = new Vector<String>();
+
+        }
+
+        table = new JTable(model);
+
+        Object[] columns = {"Id", "NachName", "VorName", "Geschlecht", "Ausbildung", "PLZ", "Stadt", "Gehalt"};
+        model.setColumnIdentifiers(columns);
+        table.setModel(model);
+            
+        
+        // MouseListener zum Auslesen die Zeilen daten aus JTable nach JtextField
+        
+        table.addMouseListener(new MouseAdapter()
+        {
+            public void mouseClicked(MouseEvent e){
+                int i  = table.getSelectedRow();
+                
+                txtId.setText(model.getValueAt(i, 0).toString());
+                txtNachname.setText(model.getValueAt(i, 1).toString());
+                txtVorname.setText(model.getValueAt(i, 2).toString());
+                txtGeschlecht.setText(model.getValueAt(i, 3).toString());
+                txtAusbildung.setText(model.getValueAt(i, 4).toString());
+                txtPLZ.setText(model.getValueAt(i, 5).toString());
+                txtStadt.setText(model.getValueAt(i, 6).toString());
+                txtGehalt.setText(model.getValueAt(i, 7).toString());    
+            }
+        
+        });
+        
+        table.setShowGrid(true);
+        table.setGridColor(Color.gray);
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.green);
+        
+        // Working with ScrollPane
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+        table.setRowHeight(20);
+        
+        scrollPane.setBackground(Color.CYAN);
+        JPanel panel = new JPanel();
+        panel.add(scrollPane);
+        panel.setBounds(0,0,500,400);
+        this.add(panel);
+        this.setVisible(true);
+        
+                
+    }
+    
+   
+    
+// btnAuslesenActionListener interface zum Daten auslesen von resultSet
+    private class btnAuslesenActionListener implements ActionListener
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                writeResultSetJtable(resultSet);
+                JOptionPane.showMessageDialog(null, "Daten würde erfolgreich ausgelesen");
+            }
+            catch (Exception e1)
+            {
+
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Daten könnte nicht erfolgreich ausgelesen");
+            }
+
+        }
+
+    }
+    
+    // Create JFrame and  JTable
+    JFrame frame = new JFrame();
+    JTable table  = new JTable();
+    
+    // btnBeendenActionListener interface zum beenden das program
+    private class btnBeendenActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            try{
+                System.exit(0);    
+                JOptionPane.showMessageDialog(null, "Program erfolgreich beendet");
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Program könnte nicht erfolgreich beenden");
+                
+            }
+         }
+    }
+
+   // btnAddierenActionListener zum addieren neue zeilen in der tabelle
+    private class btnAddierenActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+
+            String[] row = new String[8];
+
+            row[0] = txtId.getText();
+            row[1] = txtNachname.getText();
+            row[2] = txtVorname.getText();
+            row[3] = txtGeschlecht.getText();
+            row[4] = txtAusbildung.getText();
+            row[5] = txtPLZ.getText();
+            row[6] = txtStadt.getText();
+            row[7] = txtGehalt.getText();
+
+            model.addRow(row);
+
+        }
+    }
+      
+    // btnLöschenActionListener zum löschen zeilen in der tabelle
+      
+    private class btnLöschenActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+
+            int i = table.getSelectedRow();
+            if (i >= 0)
+            {
+                model.removeRow(i);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Daten könnte nicht erfolgreich löschen");
+            }
+
+        }
+    }
+    
+ // btnAktualisierenActionListener zum aktualisieren zeilen feld in der tabelle
+    private class btnAktualisierenActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+
+            {
+                int i = table.getSelectedRow();
+
+                if (i >= 0)
+                {
+                    @SuppressWarnings("unused")
+                    String[] row = new String[8];
+
+                    model.setValueAt(txtId.getText(), i, 0);
+                    model.setValueAt(txtNachname.getText(), i, 1);
+                    model.setValueAt(txtVorname.getText(), i, 2);
+                    model.setValueAt(txtGeschlecht.getText(), i, 3);
+                    model.setValueAt(txtAusbildung.getText(), i, 4);
+                    model.setValueAt(txtPLZ.getText(), i, 5);
+                    model.setValueAt(txtStadt.getText(), i, 6);
+                    model.setValueAt(txtGehalt.getText(), i, 7);
+                }
+
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Daten könnte nicht erfolgreich aktualisieren");
+                }
+
+            }
+
+        }
+    }
+    
+  
+    // btnMySqlAddierenActionListener zum Addieren neue zeile in MySQL
+    private class btnMySqlAddierenActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            {
+                // String testDB ="plz";
+                String sql = "INSERT INTO plz(Id, nachName, vorName, Geschlecht, Ausbildung, PLZ, Stadt, Gehalt)" + 
+                "VALUES ('" + txtId.getText() + "','"
+                        + txtNachname.getText() + "','" + txtVorname.getText() + "','" + txtGeschlecht.getText() + "','" + txtAusbildung.getText() + "', '"
+                        + txtPLZ.getText() + "','" + txtStadt.getText() + "','" + txtGehalt.getText() + "')";
+                try
+                {
+                    // Prepared Statement
+
+                    Statement s = connect.prepareStatement(sql);
+                    s.execute(sql);
+
+                    JOptionPane.showMessageDialog(null, "Daten würde in mySQL erfolgreich addiert");
+
+                }
+                catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Daten könnte  in mySQL nicht erfolgreich addieren");
+                }
+
+            }
+
+        
+        }
+
+    }
+    
+    // btnMySqlLöschenActionListener zum Löschen zeile in MySQL
+    // implements ist interface von Objekt
+    private class btnMySqlLöschenActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            
+                String sql = "DELETE FROM plz WHERE Id = "+txtId.getText();
+            try
+                {
+                    // Prepared Statement
+                    Statement s = connect.prepareStatement(sql);
+                    s.execute(sql);
+                    JOptionPane.showMessageDialog(null, "Daten würde  von mySQL erfolgreich gelöscht");
+                }
+            catch(SQLException ex)
+            {
+                {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Daten konnte nicht von mySQL erfolgreich löschen");
+                }
+                
+            }
+        }
+    }
+
+ // btnMySqlAktualisierenActionListener zum Aktualisiern zeilen Feld in MySQL
+    private class btnMySqlAktualisierenActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            
+            String sql = "UPDATE `plz` SET `Id` = '"+txtId.getText()+"',`nachName` = '"+ txtNachname.getText()+"', `vorName` = '" + txtVorname.getText() + "', `Geschlecht` = '" + txtGeschlecht.getText() + "', `Ausbildung` = '" + txtAusbildung.getText() + "', `PLZ` = '"+ txtPLZ.getText() + "', `Stadt` = '" + txtStadt.getText() + "',"
+                            + " `Gehalt` = '" + txtGehalt.getText() + "'  WHERE Id = " +txtId.getText();
+        
+            try
+                {
+                    Statement s = connect.prepareStatement(sql);
+
+                    // Execute
+                    s.execute(sql);
+                    JOptionPane.showMessageDialog(null, "Daten würde von mySQL erfolgreich aktualisiert");
+                }
+                catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Daten könnte nicht von mySQL erfolgreich aktualisieren");
+                
+                }
+
+            }
+
+        }
+
+    
+    
+    // private class btnOkActionListener implements ActionListener
+    // try to find the code from the cd library
+    //    {
+    //    	
+    //    	
+    //    }
+    
+    
+    
+    public static void main(String[] args)
+    {
+        PersonalInfoSystem pis = new PersonalInfoSystem();
+        pis.readDataBase();
+
+    }
+
+}
