@@ -1,0 +1,131 @@
+PISData.java
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class PISData {
+    public static List<PISData> liComments = new ArrayList<PISData>(); 
+    
+    long Id;
+    String nachName;
+    String vorName;
+    String Geschlecht;
+    String Ausbildung;
+    String PLZ;
+    String Stadt;
+    int Gehalt;
+
+    
+    public PISData(long id, String nachName, String vorName, String Geschlecht, String Ausbildung, String PLZ, String Stadt, int Gehalt)
+    {
+        super();
+        this.Id = Id;
+        this.nachName = nachName;
+        this.vorName = vorName;
+        this.Geschlecht = Geschlecht;
+        this.Ausbildung = Ausbildung;
+        this.PLZ = PLZ;
+        this.Stadt = Stadt;
+        this.Gehalt = Gehalt;
+        
+     }
+    // fall neuanlage
+    public PISData(int Id, String nachName, String vorName, String Geschlecht, String Ausbildung, String PLZ, String Stadt, int Gehalt) 
+    {
+        super();
+        this.Id = -1;
+        this.nachName = nachName;
+        this.vorName = vorName;
+        this.Geschlecht = Geschlecht;
+        this.Ausbildung = Ausbildung;
+        this.PLZ = PLZ;
+        this.Stadt = Stadt;
+        this.Gehalt = Gehalt;
+        saveToDB();    // gleich in die db schreiben
+    }
+    
+    // Zum Save Daten in MySQL 
+    public void saveToDB() 
+    {
+        if (Id >= 0) {
+            //bereits bestehender eintrag in der db
+            PersonalInfoSystem.updateInDB(this);
+        } else {
+            //noch existiert kein eintrag in der db
+            this.Id = PersonalInfoSystem.writeToDB1(this);
+        }
+    }
+    
+    // Alle Getters
+    public int getId() 
+    {
+        return (int) Id;
+    }
+    public String getnachName() 
+    {
+        return nachName;
+    }
+    public String getvorName () 
+    {
+        return vorName;
+    }
+    public String getGeschlecht() 
+    {
+        return Geschlecht;
+    }
+    public String getAusbildung() 
+    {
+        return Ausbildung;
+    }
+    public String getPLZ()
+    {
+        return PLZ;
+    }
+    public String getStadt() 
+    {
+        return Stadt;
+    }
+        
+    public int getGehalt() 
+    {
+        return Gehalt;
+    }
+    
+    // Alle Setters      
+    public void setId(int Id) 
+    {
+        this.Id = Id;
+    }
+    public void setnachName(String nachName) 
+    {
+        this.nachName = nachName;
+    }
+    public void setvorName(String vorName) 
+    {
+        this.vorName = vorName;
+    }
+    public void setGeschlecht(String Geschlecht) 
+    {
+        this.Geschlecht = Geschlecht;
+    }
+    public void setAusbildung(String Ausbildung) 
+    {
+        this.Ausbildung = Ausbildung;
+    }
+    public void setPLZ(String PLZ)
+    {
+        this.PLZ = PLZ;
+    }
+    public void setStadt(String Stadt) 
+    {
+        this.Stadt = Stadt;
+    }
+    public void setGehalt (int Gehalt){
+        this.Gehalt = Gehalt;
+    }
+    
+
+}
+
